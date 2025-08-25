@@ -12,7 +12,7 @@ exports.storeToken = (res, token) => {
     res.cookie("sid", token, {
         httpOnly: true, // Prevent JS access (XSS protection)
         secure: process.env.NODE_ENV === "production", // Use HTTPS in production
-        sameSite: "lax", // Prevent CSRF
+        sameSite: "None",
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day
     });
 };
