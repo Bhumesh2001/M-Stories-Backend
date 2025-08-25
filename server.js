@@ -13,6 +13,7 @@ const sanitizeMiddleware = require("./middlewares/sanitizeMiddleware");
 dotenv.config();
 const app = express();
 app.use(cookieParser());
+app.set("trust proxy", 1);
 
 // ------------------------------------
 // 🛡️ 1. Connect to MongoDB
