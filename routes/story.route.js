@@ -10,8 +10,8 @@ const { authenticate, authorizeRoles } = require("../middlewares/authMiddleware"
 // ✅ Create Story
 router.post(
     "/",
-    /*authenticate,
-    authorizeRoles('admin'),*/
+    authenticate,
+    authorizeRoles('admin'),
     upload.array("images", 5),
     storyValidation,
     validateRequest,
@@ -27,13 +27,13 @@ router.get("/:id", storyController.getStoryById);
 // ✅ Update Story
 router.put(
     "/:id",
-    /*authenticate,
-    authorizeRoles('admin'),*/
+    authenticate,
+    authorizeRoles('admin'),
     upload.array("images", 5),
     storyController.updateStory
 );
 
 // ✅ Delete Story
-router.delete("/:id", /*authenticate, authorizeRoles('admin'),*/ storyController.deleteStory);
+router.delete("/:id", authenticate, authorizeRoles('admin'), storyController.deleteStory);
 
 module.exports = router;

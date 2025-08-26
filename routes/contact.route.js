@@ -16,9 +16,9 @@ const { authenticate, authorizeRoles } = require("../middlewares/authMiddleware"
 router.post("/", createContactValidation, validateRequest, createContact);
 
 // 🔐 Admin-only: Get all contacts
-router.get("/", /*authenticate, authorizeRoles("admin"),*/ getAllContacts);
+router.get("/", authenticate, authorizeRoles("admin"), getAllContacts);
 
 // 🔐 Admin-only: Get single contact by ID
-router.get("/:id", /*authenticate, authorizeRoles("admin"),*/ getContactById);
+router.get("/:id", authenticate, authorizeRoles("admin"), getContactById);
 
 module.exports = router;

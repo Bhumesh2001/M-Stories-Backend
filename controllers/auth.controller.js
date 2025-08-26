@@ -42,7 +42,7 @@ exports.logout = (req, res, next) => {
         res.cookie("sid", "", {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
+            sameSite: "None",
             expires: new Date(0),
         });
 

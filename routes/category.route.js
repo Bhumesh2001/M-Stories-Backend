@@ -21,8 +21,8 @@ const upload = require('../middlewares/upload.middleware');
 // ✅ Create category (Admin only)
 router.post(
     "/",
-    /*authenticate,
-    authorizeRoles("admin"),*/
+    authenticate,
+    authorizeRoles("admin"),
     upload.array('images', 5),
     createCategoryValidation,
     validateRequest,
@@ -36,8 +36,8 @@ router.get("/:id", getCategoryById);
 // ✏️ Update category (Admin only)
 router.put(
     "/:id",
-    /*authenticate,
-    authorizeRoles("admin"),*/
+    authenticate,
+    authorizeRoles("admin"),
     upload.array('images', 5),
     updateCategoryValidation,
     validateRequest,
@@ -45,6 +45,6 @@ router.put(
 );
 
 // ❌ Delete category (Admin only)
-router.delete("/:id", /*authenticate, authorizeRoles("admin"),*/ deleteCategory);
+router.delete("/:id", authenticate, authorizeRoles("admin"), deleteCategory);
 
 module.exports = router;

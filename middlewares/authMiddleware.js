@@ -18,7 +18,7 @@ exports.authenticate = (req, res, next) => {
 exports.authorizeRoles = (...roles) => {
     return (req, res, next) => {
         if (!roles.includes(req.user.role)) {
-            return errorResponse(res, "Forbidden: You do not have access", 403);
+            return errorResponse(res, "Forbidden: You don't have access", 403);
         }
         next();
     };

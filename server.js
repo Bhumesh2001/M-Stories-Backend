@@ -41,8 +41,7 @@ app.use(hpp());
 // Enable CORS (set CLIENT_URL in .env for security in prod)
 app.use(
     cors({
-        origin: process.env.CLIENT_URL || "*",
-        methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+        origin: process.env.CLIENT_URL,
         credentials: true,
     })
 );

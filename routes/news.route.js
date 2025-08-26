@@ -10,8 +10,8 @@ const { authenticate, authorizeRoles } = require("../middlewares/authMiddleware"
 // ✅ Create News (Multiple Images)
 router.post(
     "/",
-    /*authenticate,
-    authorizeRoles('admin'),*/
+    authenticate,
+    authorizeRoles('admin'),
     upload.array("images", 5),
     newsValidation,
     validateRequest,
@@ -27,13 +27,13 @@ router.get("/:id", newsController.getNewsById);
 // ✅ Update News (with new images)
 router.put(
     "/:id",
-    /*authenticate,
-    authorizeRoles('admin'),*/
+    authenticate,
+    authorizeRoles('admin'),
     upload.array("images", 5),
     newsController.updateNews
 );
 
 // ✅ Delete News
-router.delete("/:id", /*authenticate, authorizeRoles('admin'),*/ newsController.deleteNews);
+router.delete("/:id", authenticate, authorizeRoles('admin'), newsController.deleteNews);
 
 module.exports = router;

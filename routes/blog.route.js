@@ -21,14 +21,14 @@ router.get("/:id", getBlogById);
 // 🔒 Protected Routes (Admin Only)
 router.post(
     "/",
-    /*authenticate, 
-    authorizeRoles("admin"),*/
+    authenticate,
+    authorizeRoles("admin"),
     upload.array('images', 5),
     blogValidation,
     validateRequest,
     createBlog
 );
-router.put("/:id", /*authenticate, authorizeRoles("admin"),*/ upload.array('images', 5), updateBlog);
-router.delete("/:id", /*authenticate, authorizeRoles("admin"),*/ deleteBlog);
+router.put("/:id", authenticate, authorizeRoles("admin"), upload.array('images', 5), updateBlog);
+router.delete("/:id", authenticate, authorizeRoles("admin"), deleteBlog);
 
 module.exports = router;

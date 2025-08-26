@@ -8,11 +8,12 @@ exports.generateToken = (user) =>
         { expiresIn: "7d" }
     );
 
+// store token
 exports.storeToken = (res, token) => {
     res.cookie("sid", token, {
         httpOnly: true, // Prevent JS access (XSS protection)
         secure: process.env.NODE_ENV === "production", // Use HTTPS in production
-        sameSite: "None",
+        sameSite: "lax",
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day
     });
 };
