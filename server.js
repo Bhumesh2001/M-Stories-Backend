@@ -41,7 +41,13 @@ app.use(hpp());
 // Enable CORS (set CLIENT_URL in .env for security in prod)
 app.use(
     cors({
-        origin: ["http://localhost:8000", "http://localhost:5173"],
+        origin: [
+            "http://localhost:8000", // local site
+            "http://localhost:5173", // local dashboard
+            "https://m-stories-dashboard.netlify.app", //dashboard
+            "https://muslimstoriesmedia.com", //site
+            "https://muslim-stories.netlify.app", //site
+        ],
         credentials: true,
     })
 );
