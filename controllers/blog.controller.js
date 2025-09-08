@@ -4,7 +4,7 @@ const { uploadImage, deleteImage } = require('../utils/cloudinary');
 
 exports.getAllBlogs = async (req, res, next) => {
     try {
-        const blogs = await Blog.find().populate("category");
+        const blogs = await Blog.find().sort({ createdAt: -1 }).populate("category");
         return successResponse(res, blogs, "Blogs fetched successfully");
     } catch (error) {
         next(error);

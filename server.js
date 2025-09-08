@@ -41,7 +41,7 @@ app.use(hpp());
 // Enable CORS (set CLIENT_URL in .env for security in prod)
 app.use(
     cors({
-        origin: process.env.CLIENT_URL,
+        origin: ["http://localhost:8000", "http://localhost:5173"],
         credentials: true,
     })
 );
