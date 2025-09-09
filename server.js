@@ -42,9 +42,10 @@ app.use(hpp());
 app.use(
     cors({
         origin: [
-            "https://m-stories-dashboard.netlify.app", //dashboard
-            "https://muslimstoriesmedia.com", //site
-            "https://muslim-stories.netlify.app", //site
+            "https://m-stories-dashboard.netlify.app", // dashboard
+            "https://dashboard-m-stories.netlify.app", // dashboard
+            "https://muslimstoriesmedia.com", // site
+            "https://muslim-stories.netlify.app", // site
         ],
         credentials: true,
     })
