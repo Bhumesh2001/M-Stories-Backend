@@ -11,7 +11,7 @@ exports.generateToken = (user) =>
 // store token
 exports.storeToken = (res, token) => {
     res.cookie("sid", token, {
-        httpOnly: true, // Prevent JS access (XSS protection)
+        httpOnly: true,
         secure: true,
         sameSite: "None",
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day

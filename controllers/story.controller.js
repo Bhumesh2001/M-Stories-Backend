@@ -39,11 +39,36 @@ exports.createStory = async (req, res, next) => {
     }
 };
 
-// ✅ Get All Stories
+// ✅ Get All Stories with Pagination
 exports.getAllStories = async (req, res, next) => {
     try {
-        const stories = await Story.find().populate("category").sort({ createdAt: -1 });
-        return successResponse(res, stories);
+        // query se page aur limit lo (default: page=1, limit=10)
+        let { page = 1, limit = 10 } = req.query;
+        page = parseInt(page);
+        limit = parseInt(limit);
+
+        // skip calculate karo
+        const skip = (page - 1) * limit;
+
+        // stories fetch karo
+        const stories = await Story.find()
+            .populate("category")
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        // total count nikalna
+        const totalStories = await Story.countDocuments();
+
+        return successResponse(res, {
+            pagination: {
+                total: totalStories,
+                page,
+                pages: Math.ceil(totalStories / limit),
+                limit,
+            },
+            stories,
+        });
     } catch (error) {
         next(error);
     }

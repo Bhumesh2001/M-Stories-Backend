@@ -2,14 +2,15 @@ const User = require("../models/User");
 const { successResponse, errorResponse } = require("../utils/response");
 const { uploadImage, deleteImage } = require('../utils/cloudinary');
 const { storeToken, generateToken } = require('../utils/cookie');
+const bcrypt = require("bcryptjs");
 
 exports.register = async (req, res, next) => {
     try {
-        const { name, email, password, role = 'user' } = req.body;
+        const { name, email, password, role = 'user', status } = req.body;
         const existing = await User.findOne({ email });
         if (existing) return errorResponse(res, "User already exists", 409);
 
-        const user = await User.create({ name, email, password, role });
+        const user = await User.create({ name, email, password, role, status });
         const token = generateToken(user);
         storeToken(res, token);
 
@@ -41,7 +42,7 @@ exports.logout = (req, res, next) => {
     try {
         res.cookie("sid", "", {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
+            secure: true,
             sameSite: "None",
             expires: new Date(0),
         });
@@ -148,6 +149,20 @@ exports.getAllUsers = async (req, res, next) => {
     }
 };
 
+exports.createUser = async (req, res, next) => {
+    try {
+        const { name, email, password, role = 'user', status } = req.body;
+        const existing = await User.findOne({ email });
+        if (existing) return errorResponse(res, "User already exists", 409);
+
+        const user = await User.create({ name, email, password, role, status });
+
+        return successResponse(res, { user }, "User registered successfully", 201);
+    } catch (err) {
+        next(err);
+    }
+};
+
 exports.getUserById = async (req, res, next) => {
     try {
         const user = await User.findById(req.params.id).select("-password");
@@ -162,11 +177,11 @@ exports.getUserById = async (req, res, next) => {
 
 exports.updateUser = async (req, res, next) => {
     try {
-        const { name, email } = req.body;
+        const { name, email, role, status } = req.body;
 
         const user = await User.findByIdAndUpdate(
             req.params.id,
-            { name, email },
+            { name, email, role, status },
             { new: true, runValidators: true }
         ).select("-password");
 

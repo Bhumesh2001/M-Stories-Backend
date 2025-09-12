@@ -30,7 +30,7 @@ app.use(helmet());
 // Rate limiter to prevent brute force
 const limiter = rateLimit({
     windowMs: 10 * 60 * 1000, // 10 minutes
-    max: 100,
+    max: 10,
     message: "Too many requests from this IP, please try again later.",
 });
 app.use('/api/auth/login', limiter);

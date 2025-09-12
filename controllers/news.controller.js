@@ -41,8 +41,33 @@ exports.createNews = async (req, res, next) => {
 
 exports.getAllNews = async (req, res, next) => {
     try {
-        const newsList = await News.find().populate("category").sort({ createdAt: -1 });
-        return successResponse(res, newsList);
+        // page aur limit query params se lo (default: page=1, limit=10)
+        let { page = 1, limit = 10 } = req.query;
+        page = parseInt(page);
+        limit = parseInt(limit);
+
+        // skip calculation
+        const skip = (page - 1) * limit;
+
+        // news list fetch with pagination
+        const newsList = await News.find()
+            .populate("category")
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        // total documents count
+        const totalNews = await News.countDocuments();
+
+        return successResponse(res, {
+            pagination: {
+                total: totalNews,
+                page,
+                pages: Math.ceil(totalNews / limit),
+                limit
+            },
+            newsList,
+        });
     } catch (error) {
         next(error);
     }

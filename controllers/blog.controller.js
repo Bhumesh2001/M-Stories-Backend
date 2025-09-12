@@ -4,8 +4,31 @@ const { uploadImage, deleteImage } = require('../utils/cloudinary');
 
 exports.getAllBlogs = async (req, res, next) => {
     try {
-        const blogs = await Blog.find().sort({ createdAt: -1 }).populate("category");
-        return successResponse(res, blogs, "Blogs fetched successfully");
+        // Get page and limit from query params, default: page=1, limit=10
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+
+        const skip = (page - 1) * limit;
+
+        // Fetch blogs with pagination
+        const blogs = await Blog.find()
+            .sort({ createdAt: -1 })
+            .populate("category")
+            .skip(skip)
+            .limit(limit);
+
+        // Count total documents for pagination info
+        const total = await Blog.countDocuments();
+
+        return successResponse(res, {
+            pagination: {
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit),
+            },
+            blogs,
+        }, "Blogs fetched successfully");
     } catch (error) {
         next(error);
     }

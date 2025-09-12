@@ -2,11 +2,34 @@ const Category = require("../models/Category");
 const { successResponse, errorResponse } = require("../utils/response");
 const { uploadImage, deleteImage } = require("../utils/cloudinary");
 
-// ✅ Get All Categories
+// ✅ Get All Categories with Pagination
 exports.getAllCategories = async (req, res, next) => {
     try {
-        const categories = await Category.find().sort({ createdAt: -1 });
-        return successResponse(res, categories);
+        // Page and limit (default: page=1, limit=10)
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+
+        const skip = (page - 1) * limit;
+
+        // Fetch categories
+        const categories = await Category.find()
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        // Count total documents
+        const total = await Category.countDocuments();
+
+        return successResponse(res, {
+            pagination: {
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit),
+            },
+            categories,
+        }
+        );
     } catch (error) {
         next(error);
     }

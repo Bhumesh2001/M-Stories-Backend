@@ -10,7 +10,8 @@ const {
     deleteUser,
     updateAdminProfile,
     updateAdminPassword,
-    logout
+    logout,
+    createUser
 } = require("../controllers/auth.controller");
 const {
     registerValidation,
@@ -37,7 +38,7 @@ router.put(
     updateAdminProfile
 );
 router.put("/update/password", authenticate, authorizeRoles("admin"), updateAdminPassword);
-
+router.post('/users/register', authenticate, authorizeRoles('admin'), createUser);
 router.get("/users", authenticate, authorizeRoles("admin"), getAllUsers); // ✅ Get all users
 router.get("/users/:id", getUserById); // ✅ Get single user
 router.put("/users/:id", authenticate, authorizeRoles("admin"), updateUser); // ✅ Update user
