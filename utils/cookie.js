@@ -12,8 +12,8 @@ exports.generateToken = (user) =>
 exports.storeToken = (res, token) => {
     res.cookie("sid", token, {
         httpOnly: true,
-        // secure: true,
-        sameSite: "Lax",
+        secure: true,
+        sameSite: "None",
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day
     });
 };

@@ -44,8 +44,8 @@ exports.logout = (req, res, next) => {
     try {
         res.cookie("sid", "", {
             httpOnly: true,
-            // secure: true,
-            sameSite: "Lax",
+            secure: true,
+            sameSite: "None",
             expires: new Date(0),
         });
 
