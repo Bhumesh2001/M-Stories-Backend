@@ -1,9 +1,12 @@
 const Redis = require("ioredis");
 
-// Example: using Upstash
-const redis = new Redis({
-    url: process.env.REDIS_URL, // from provider
-    token: process.env.REDIS_TOKEN, // if required
+// const redis = new Redis({
+//     url: process.env.REDIS_URL, // from provider
+//     token: process.env.REDIS_TOKEN, // if required
+// });
+
+const redis = new Redis(process.env.REDIS_URL, {
+    tls: {},
 });
 
 const cacheMiddleware = async (req, res, next) => {
