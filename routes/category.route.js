@@ -11,6 +11,7 @@ const {
 
 const { authenticate, authorizeRoles } = require("../middlewares/authMiddleware");
 const validateRequest = require("../middlewares/validateMiddleware");
+const { cacheMiddleware } = require('../middlewares/cacheMiddleware');
 
 const {
     createCategoryValidation,
@@ -30,8 +31,8 @@ router.post(
 );
 
 // 🟢 Read all or by ID (Public)
-router.get("/", getAllCategories);
-router.get("/:id", getCategoryById);
+router.get("/", cacheMiddleware, getAllCategories);
+router.get("/:id", cacheMiddleware, getCategoryById);
 
 // ✏️ Update category (Admin only)
 router.put(

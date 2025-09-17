@@ -5,18 +5,21 @@ const {
     getBlogById,
     updateBlog,
     deleteBlog,
+    getBlogsByCategory,
 } = require("../controllers/blog.controller");
 
 const { authenticate, authorizeRoles } = require("../middlewares/authMiddleware");
 const upload = require('../middlewares/upload.middleware');
 const { blogValidation } = require('../validators/blog.validator');
-const validateRequest = require('../middlewares/validateMiddleware')
+const validateRequest = require('../middlewares/validateMiddleware');
+const { cacheMiddleware } = require('../middlewares/cacheMiddleware');
 
 const router = express.Router();
 
 // 🟢 Public Routes
-router.get("/", getAllBlogs);
-router.get("/:id", getBlogById);
+router.get("/", cacheMiddleware, getAllBlogs);
+router.get("/:id", cacheMiddleware, getBlogById);
+router.get("/category/:id", cacheMiddleware, getBlogsByCategory);
 
 // 🔒 Protected Routes (Admin Only)
 router.post(

@@ -20,6 +20,7 @@ const {
 const validateRequest = require("../middlewares/validateMiddleware");
 const { authenticate, authorizeRoles } = require("../middlewares/authMiddleware");
 const upload = require('../middlewares/upload.middleware');
+const { cacheMiddleware } = require('../middlewares/cacheMiddleware');
 
 // Public
 router.post("/register", registerValidation, validateRequest, register);
@@ -27,8 +28,8 @@ router.post("/login", loginValidation, validateRequest, login);
 router.post("/logout", logout);
 
 // Protected
-router.get("/me", authenticate, authorizeRoles("admin"), getProfile);
-router.get("/user/me", authenticate, getProfile);
+router.get("/me", authenticate, authorizeRoles("admin"), cacheMiddleware, getProfile);
+router.get("/user/me", authenticate, cacheMiddleware, getProfile);
 
 router.put(
     "/update/profile",
@@ -39,8 +40,8 @@ router.put(
 );
 router.put("/update/password", authenticate, authorizeRoles("admin"), updateAdminPassword);
 router.post('/users/register', authenticate, authorizeRoles('admin'), createUser);
-router.get("/users", authenticate, authorizeRoles("admin"), getAllUsers); // ✅ Get all users
-router.get("/users/:id", getUserById); // ✅ Get single user
+router.get("/users", authenticate, authorizeRoles("admin"), cacheMiddleware, getAllUsers);
+router.get("/users/:id", cacheMiddleware, getUserById); // ✅ Get single user
 router.put("/users/:id", authenticate, authorizeRoles("admin"), updateUser); // ✅ Update user
 router.delete("/users/:id", authenticate, authorizeRoles("admin"), deleteUser); // ✅ Delete user
 

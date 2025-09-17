@@ -6,6 +6,7 @@ const storyController = require("../controllers/story.controller");
 const { storyValidation } = require("../validators/story.validation");
 const validateRequest = require("../middlewares/validateMiddleware");
 const { authenticate, authorizeRoles } = require("../middlewares/authMiddleware");
+const { cacheMiddleware } = require('../middlewares/cacheMiddleware');
 
 // ✅ Create Story
 router.post(
@@ -19,10 +20,10 @@ router.post(
 );
 
 // ✅ Get All Stories
-router.get("/", storyController.getAllStories);
+router.get("/", cacheMiddleware, storyController.getAllStories);
 
 // ✅ Get Story by ID
-router.get("/:id", storyController.getStoryById);
+router.get("/:id", cacheMiddleware, storyController.getStoryById);
 
 // ✅ Update Story
 router.put(

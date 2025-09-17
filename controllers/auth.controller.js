@@ -3,6 +3,7 @@ const { successResponse, errorResponse } = require("../utils/response");
 const { uploadImage, deleteImage } = require('../utils/cloudinary');
 const { storeToken, generateToken } = require('../utils/cookie');
 const bcrypt = require("bcryptjs");
+const { clearCache } = require('../middlewares/cacheMiddleware');
 
 exports.register = async (req, res, next) => {
     try {
@@ -13,6 +14,7 @@ exports.register = async (req, res, next) => {
         const user = await User.create({ name, email, password, role, status });
         const token = generateToken(user);
         storeToken(res, token);
+        clearCache("/api/auth/users");
 
         return successResponse(res, { user, token }, "User registered successfully", 201);
     } catch (err) {
@@ -42,8 +44,8 @@ exports.logout = (req, res, next) => {
     try {
         res.cookie("sid", "", {
             httpOnly: true,
-            secure: true,
-            sameSite: "None",
+            // secure: true,
+            sameSite: "Lax",
             expires: new Date(0),
         });
 
@@ -96,6 +98,8 @@ exports.updateAdminProfile = async (req, res, next) => {
             { new: true, runValidators: true }
         ).select("-password");
 
+        clearCache("/api/auth/me");
+
         return successResponse(res, updatedAdmin, "Profile updated successfully");
     } catch (error) {
         next(error);
@@ -121,7 +125,8 @@ exports.updateAdminPassword = async (req, res, next) => {
         if (!isMatch) return errorResponse(res, "Current password is incorrect", 401);
 
         admin.password = newPassword
-        await admin.save();;
+        await admin.save();
+        clearCache("/api/auth/me");
 
         return successResponse(res, null, "Password updated successfully");
     } catch (error) {
@@ -156,6 +161,7 @@ exports.createUser = async (req, res, next) => {
         if (existing) return errorResponse(res, "User already exists", 409);
 
         const user = await User.create({ name, email, password, role, status });
+        clearCache("/api/auth/users");
 
         return successResponse(res, { user }, "User registered successfully", 201);
     } catch (err) {
@@ -188,6 +194,10 @@ exports.updateUser = async (req, res, next) => {
         if (!user) {
             return errorResponse(res, "User not found", 404);
         }
+        clearCache("/api/auth/users");
+        clearCache("/api/auth/user/me");
+        clearCache(`/api/auth/users/${req.params.id}`);
+
         return successResponse(res, user, "User updated successfully");
     } catch (error) {
         next(error);
@@ -200,6 +210,10 @@ exports.deleteUser = async (req, res, next) => {
         if (!user) {
             return errorResponse(res, "User not found", 404);
         }
+        clearCache("/api/auth/users");
+        clearCache("/api/auth/user/me");
+        clearCache(`/api/auth/users/${req.params.id}`);
+
         return successResponse(res, {}, "User deleted successfully");
     } catch (error) {
         next(error);

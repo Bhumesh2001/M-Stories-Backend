@@ -1,6 +1,7 @@
 const Story = require("../models/Story");
 const { successResponse, errorResponse } = require("../utils/response");
 const { uploadImage, deleteImage } = require("../utils/cloudinary");
+const { clearCache } = require('../middlewares/cacheMiddleware');
 
 // ✅ Create Story
 exports.createStory = async (req, res, next) => {
@@ -32,6 +33,8 @@ exports.createStory = async (req, res, next) => {
             latest: latest || false,
             images,
         });
+
+        clearCache('/api/story');
 
         return successResponse(res, story, "Story created successfully", 201);
     } catch (error) {
@@ -108,6 +111,9 @@ exports.updateStory = async (req, res, next) => {
         }
 
         const updatedStory = await Story.findByIdAndUpdate(id, updatedData, { new: true });
+        clearCache('/api/story');
+        clearCache(`/api/story/${id}`);
+
         return successResponse(res, updatedStory, "Story updated successfully");
     } catch (error) {
         next(error);
@@ -123,6 +129,9 @@ exports.deleteStory = async (req, res, next) => {
 
         await Promise.all(story.images.map((img) => deleteImage(img.publicId)));
         await Story.findByIdAndDelete(id);
+
+        clearCache('/api/story');
+        clearCache(`/api/story/${id}`);
 
         return successResponse(res, {}, "Story deleted successfully");
     } catch (error) {

@@ -1,10 +1,13 @@
 const Contact = require("../models/Contact");
 const { successResponse, errorResponse } = require("../utils/response");
+const { clearCache } = require('../middlewares/cacheMiddleware');
 
 // Create Contact
 exports.createContact = async (req, res, next) => {
     try {
         const contact = await Contact.create(req.body);
+        clearCache('/api/contacts');
+
         return successResponse(res, contact, "Contact submitted successfully", 201);
     } catch (error) {
         next(error);

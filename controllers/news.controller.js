@@ -1,6 +1,7 @@
 const News = require("../models/News");
 const { successResponse, errorResponse } = require("../utils/response");
 const { uploadImage, deleteImage } = require("../utils/cloudinary");
+const { clearCache } = require('../middlewares/cacheMiddleware');
 
 exports.createNews = async (req, res, next) => {
     try {
@@ -32,6 +33,7 @@ exports.createNews = async (req, res, next) => {
             sourceUrl,
             images,
         });
+        clearCache("/api/news");
 
         return successResponse(res, news, "News created successfully", 201);
     } catch (error) {
@@ -104,6 +106,8 @@ exports.updateNews = async (req, res, next) => {
                 publicId: res.public_id,
             }));
         }
+        clearCache("/api/news");
+        clearCache(`/api/news/${id}`);
 
         const updatedNews = await News.findByIdAndUpdate(id, updatedData, { new: true });
         return successResponse(res, updatedNews, "News updated successfully");
@@ -120,6 +124,9 @@ exports.deleteNews = async (req, res, next) => {
 
         await Promise.all(news.images.map((img) => deleteImage(img.publicId)));
         await News.findByIdAndDelete(id);
+
+        clearCache("/api/news");
+        clearCache(`/api/news/${id}`);
 
         return successResponse(res, {}, "News deleted successfully");
     } catch (error) {

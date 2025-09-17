@@ -6,6 +6,7 @@ const newsController = require("../controllers/news.controller");
 const { newsValidation } = require("../validators/news.validation");
 const validateRequest = require("../middlewares/validateMiddleware");
 const { authenticate, authorizeRoles } = require("../middlewares/authMiddleware");
+const { cacheMiddleware } = require('../middlewares/cacheMiddleware');
 
 // ✅ Create News (Multiple Images)
 router.post(
@@ -19,10 +20,10 @@ router.post(
 );
 
 // ✅ Get All News
-router.get("/", newsController.getAllNews);
+router.get("/", cacheMiddleware, newsController.getAllNews);
 
 // ✅ Get News by ID
-router.get("/:id", newsController.getNewsById);
+router.get("/:id", cacheMiddleware, newsController.getNewsById);
 
 // ✅ Update News (with new images)
 router.put(

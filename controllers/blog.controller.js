@@ -1,6 +1,7 @@
 const Blog = require("../models/Blog");
 const { successResponse, errorResponse } = require("../utils/response");
 const { uploadImage, deleteImage } = require('../utils/cloudinary');
+const { clearCache } = require("../middlewares/cacheMiddleware");
 
 exports.getAllBlogs = async (req, res, next) => {
     try {
@@ -29,6 +30,42 @@ exports.getAllBlogs = async (req, res, next) => {
             },
             blogs,
         }, "Blogs fetched successfully");
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.getBlogsByCategory = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        // Get page and limit from query params
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        // Fetch blogs with pagination and category filter
+        const blogs = await Blog.find({ category: id })
+            .sort({ createdAt: -1 })
+            .populate("category", "name description") // sirf zaroori fields
+            .skip(skip)
+            .limit(limit)
+            .lean();
+
+        // Count total documents for this category
+        const total = await Blog.countDocuments({ category: id });
+
+        return successResponse(res, {
+            pagination: {
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit),
+            },
+            blogs,
+        },
+            "Blogs fetched successfully by category"
+        );
     } catch (error) {
         next(error);
     }
@@ -73,6 +110,7 @@ exports.createBlog = async (req, res, next) => {
             category,
             images,
         });
+        clearCache('/api/blogs');
 
         return successResponse(res, blog, "Blog created successfully", 201);
     } catch (error) {
@@ -123,6 +161,9 @@ exports.updateBlog = async (req, res, next) => {
         updatedData.images = finalImages;
 
         const updatedBlog = await Blog.findByIdAndUpdate(id, updatedData, { new: true });
+        clearCache('/api/blogs');
+        clearCache(`/api/blogs/${id}`);
+        clearCache(`/api/blogs/category/${updatedBlog.category}`);
 
         return successResponse(res, updatedBlog, "Blog updated successfully");
     } catch (error) {
@@ -140,6 +181,10 @@ exports.deleteBlog = async (req, res, next) => {
         await Promise.all(blog.images.map((img) => deleteImage(img.publicId)));
 
         await Blog.findByIdAndDelete(id);
+
+        clearCache('/api/blogs');
+        clearCache(`/api/blogs/${id}`);
+        clearCache(`/api/blogs/category/${blog.category}`);
 
         return successResponse(res, {}, "Blog deleted successfully");
     } catch (error) {

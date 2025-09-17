@@ -1,6 +1,7 @@
 const Category = require("../models/Category");
 const { successResponse, errorResponse } = require("../utils/response");
 const { uploadImage, deleteImage } = require("../utils/cloudinary");
+const { clearCache } = require('../middlewares/cacheMiddleware');
 
 // ✅ Get All Categories with Pagination
 exports.getAllCategories = async (req, res, next) => {
@@ -75,6 +76,7 @@ exports.createCategory = async (req, res, next) => {
             images,
         });
 
+        clearCache('/api/categories');
         return successResponse(res, category, "Category created successfully", 201);
     } catch (error) {
         next(error);
@@ -112,6 +114,8 @@ exports.updateCategory = async (req, res, next) => {
             updatedData,
             { new: true, runValidators: true }
         );
+        clearCache("/api/categories");
+        clearCache(`/api/categories/${req.params.id}`);
 
         return successResponse(res, updatedCategory, "Category updated successfully");
     } catch (error) {
@@ -131,6 +135,9 @@ exports.deleteCategory = async (req, res, next) => {
         );
 
         await Category.findByIdAndDelete(req.params.id);
+        clearCache("/api/categories");
+        clearCache(`/api/categories/${req.params.id}`);
+
         return successResponse(res, {}, "Category deleted successfully");
     } catch (error) {
         next(error);
