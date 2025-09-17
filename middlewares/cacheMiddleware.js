@@ -1,10 +1,5 @@
 const Redis = require("ioredis");
 
-// const redis = new Redis({
-//     url: process.env.REDIS_URL, // from provider
-//     token: process.env.REDIS_TOKEN, // if required
-// });
-
 const redis = new Redis(process.env.REDIS_URL, {
     tls: {},
 });
