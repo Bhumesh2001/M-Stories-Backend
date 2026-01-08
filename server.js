@@ -42,6 +42,8 @@ app.use(hpp());
 app.use(
     cors({
         origin: [
+            "http://localhost:8000", // local site
+            "http://localhost:5173", // local dashboard
             "https://dashboard-m-stories.netlify.app", // dashboard
             "https://muslimstoriesmedia.com", // site
         ],
@@ -74,6 +76,7 @@ app.use("/api/news", require('./routes/news.route'));
 app.use('/api/story', require('./routes/story.route'));
 app.use("/api/auth", require("./routes/auth.route"));
 app.use('/api/dashboard', require('./routes/dashboard.route'));
+app.use('/api/visit', require('./routes/visitor.route'));
 
 // Welcome Route
 app.get("/", (req, res) => {
@@ -96,4 +99,4 @@ app.use(errorHandler);
 // 🚀 6. Start Server
 // ------------------------------------
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => { console.log(`✅ Server is running securely on http://localhost:${PORT}`)});
+app.listen(PORT, () => { console.log(`✅ Server is running securely on http://localhost:${PORT}`) });

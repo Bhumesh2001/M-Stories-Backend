@@ -10,10 +10,19 @@ exports.generateToken = (user) =>
 
 // store token
 exports.storeToken = (res, token) => {
+    // local
     res.cookie("sid", token, {
         httpOnly: true,
-        secure: true,
-        sameSite: "None",
+        // secure: true,
+        sameSite: "Lax",
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day
     });
+
+    // live
+    //    res.cookie("sid", token, {
+    //     httpOnly: true,
+    //     secure: true,
+    //     sameSite: "None",
+    //     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day
+    // });
 };

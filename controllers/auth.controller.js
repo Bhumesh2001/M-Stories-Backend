@@ -42,12 +42,21 @@ exports.login = async (req, res, next) => {
 
 exports.logout = (req, res, next) => {
     try {
+        // local
         res.cookie("sid", "", {
             httpOnly: true,
-            secure: true,
-            sameSite: "None",
+            // secure: true,
+            sameSite: "Lax",
             expires: new Date(0),
         });
+
+        // live
+        //  res.cookie("sid", "", {
+        //     httpOnly: true,
+        //     secure: true,
+        //     sameSite: "None",
+        //     expires: new Date(0),
+        // });
 
         return successResponse(res, "Logged out successfully");
     } catch (error) {
