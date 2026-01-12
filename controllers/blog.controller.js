@@ -1,4 +1,6 @@
 const Blog = require("../models/Blog");
+const News = require("../models/News");
+const Story = require("../models/Story");
 const { successResponse, errorResponse } = require("../utils/response");
 const { uploadImage, deleteImage } = require('../utils/cloudinary');
 const { clearCache } = require("../middlewares/cacheMiddleware");
@@ -44,28 +46,67 @@ exports.getBlogsByCategory = async (req, res, next) => {
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
 
-        // Fetch blogs with pagination and category filter
-        const blogs = await Blog.find({ category: id })
-            .sort({ createdAt: -1 })
-            .populate("category", "name description") // sirf zaroori fields
-            .skip(skip)
-            .limit(limit)
-            .lean();
-
-        // Count total documents for this category
-        const total = await Blog.countDocuments({ category: id });
+        // Parallelize fetches and counts for better performance
+        const [
+            blogs,
+            totalBlogs,
+            news,
+            totalNews,
+            articles,
+            totalArticles
+        ] = await Promise.all([
+            Blog.find({ category: id })
+                .sort({ createdAt: -1 })
+                .populate("category", "name description")
+                .skip(skip)
+                .limit(limit)
+                .lean(),
+            Blog.countDocuments({ category: id }),
+            News.find({ category: id })
+                .sort({ createdAt: -1 })
+                .populate("category", "name description")
+                .skip(skip)
+                .limit(limit)
+                .lean(),
+            News.countDocuments({ category: id }),
+            Story.find({ category: id })
+                .sort({ createdAt: -1 })
+                .populate("category", "name description")
+                .skip(skip)
+                .limit(limit)
+                .lean(),
+            Story.countDocuments({ category: id })
+        ]);
 
         return successResponse(res, {
-            pagination: {
-                total,
-                page,
-                limit,
-                totalPages: Math.ceil(total / limit),
+            blogs: {
+                data: blogs,
+                pagination: {
+                    total: totalBlogs,
+                    page,
+                    limit,
+                    totalPages: Math.ceil(totalBlogs / limit),
+                },
             },
-            blogs,
-        },
-            "Blogs fetched successfully by category"
-        );
+            news: {
+                data: news,
+                pagination: {
+                    total: totalNews,
+                    page,
+                    limit,
+                    totalPages: Math.ceil(totalNews / limit),
+                },
+            },
+            articles: {
+                data: articles,
+                pagination: {
+                    total: totalArticles,
+                    page,
+                    limit,
+                    totalPages: Math.ceil(totalArticles / limit),
+                },
+            },
+        }, "Blogs, news, and articles fetched successfully by category");
     } catch (error) {
         next(error);
     }

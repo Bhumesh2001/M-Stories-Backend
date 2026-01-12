@@ -42,8 +42,8 @@ app.use(hpp());
 app.use(
     cors({
         origin: [
-            "http://localhost:8000", // local site
-            "http://localhost:5173", // local dashboard
+            // "http://localhost:8000", // local site
+            // "http://localhost:5173", // local dashboard
             "https://dashboard-m-stories.netlify.app", // dashboard
             "https://muslimstoriesmedia.com", // site
         ],
